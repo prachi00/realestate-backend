@@ -15,7 +15,11 @@ const example = async (fastify, opts) => {
                 },
             },
         });
-        const allUsers = await fastify.prisma.user.findMany({});
+        const allUsers = await fastify.prisma.user.findMany({
+            include: {
+                posts: true,
+            },
+        });
         console.dir(allUsers, { depth: null });
         return "example test";
     });

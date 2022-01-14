@@ -2,13 +2,37 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["mongoDb"]
 }
 
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+// model Address {
+//   listing   Listing @relation(fields: [listingId], references: [id])
+//   listingId String  @unique @db.ObjectId
+//   id        String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
+//   address1  String
+// }
+
+model Listing {
+  id          String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  price       Int
+  rooms       Int?
+  area        Int?
+  type        Type?     @default(UNFURNISHED)
+  address     Json?
+}
+
+enum Type {
+  FURNISHED
+  SEMIFURNISHED
+  UNFURNISHED
 }
 
 model Post {
