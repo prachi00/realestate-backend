@@ -1,12 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listingSchema = void 0;
-exports.listingSchema = {
+exports.postListingSchema = exports.getListingSchema = void 0;
+exports.getListingSchema = {
     schema: {
         querystring: {
             type: "object",
             properties: {
                 listingId: { type: "string" },
+            },
+        },
+    },
+};
+exports.postListingSchema = {
+    schema: {
+        querystring: {
+            type: "object",
+            required: ["name", "price"],
+            properties: {
+                name: { type: "string" },
+                price: { type: "number" },
             },
         },
     },

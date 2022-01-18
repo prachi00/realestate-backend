@@ -1,8 +1,8 @@
-import { listingSchema } from "./listing.schema";
+import { getListingSchema } from "./listing.schema";
 import { FastifyPluginAsync } from "fastify";
 
 const listing: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get("/", listingSchema, async function (request: any, reply) {
+  fastify.get("/", getListingSchema, async function (request: any, reply) {
     const { listingId } = request.query;
     if (!listingId) {
       // return all lisitings if id is not there
@@ -47,6 +47,43 @@ const listing: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     });
     // res.send(listing)
 
+    return { listing };
+  });
+
+  fastify.patch("/", async function (request: any, res) {
+    const { name, price, description, address, rooms, area, type, listingId } =
+      request.body;
+
+    const data: any = {};
+    if (rooms) {
+      data.rooms = rooms;
+    }
+    if (area) {
+      data.area = area;
+    }
+    if (type) {
+      data.type = type;
+    }
+    if (description) {
+      data.description = description;
+    }
+    if (address) {
+      data.address = address;
+    }
+    if (name) {
+      data.name = name;
+    }
+    if (price) {
+      data.price = price;
+    }
+    const listing = await fastify.prisma.listing.update({
+      where: {
+        id: listingId,
+      },
+      data: {
+        ...data,
+      },
+    });
     return { listing };
   });
 };
