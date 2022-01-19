@@ -76,6 +76,16 @@ const listing = async (fastify, opts) => {
         });
         return { listing };
     });
+    fastify.delete("/", async function (request, reply) {
+        const { listingId } = request.body;
+        console.log('listingIdlistingId', listingId);
+        await fastify.prisma.listing.delete({
+            where: {
+                id: listingId,
+            },
+        });
+        return 'deleted successfully';
+    });
 };
 exports.default = listing;
 //# sourceMappingURL=index.js.map

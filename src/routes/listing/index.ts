@@ -86,6 +86,17 @@ const listing: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     });
     return { listing };
   });
+
+  fastify.delete("/", async function (request: any, reply) {
+    const { listingId } = request.body;
+    // By ID
+    await fastify.prisma.listing.delete({
+      where: {
+        id: listingId,
+      },
+    });
+    return "deleted successfully";
+  });
 };
 
 export default listing;
