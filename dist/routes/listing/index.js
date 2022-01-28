@@ -8,15 +8,21 @@ const listing = async (fastify, opts) => {
             const allListing = await fastify.prisma.listing.findMany();
             return { allListing };
         }
-        const listing = await fastify.prisma.listing.findUnique({
+        let listing = await fastify.prisma.listing.findUnique({
             where: {
                 id: listingId,
             },
         });
+        const amenities = await fastify.prisma.amenities.findMany({
+            where: {
+                id: { in: listing === null || listing === void 0 ? void 0 : listing.amenities },
+            },
+        });
+        listing.amenities = amenities;
         return { listing };
     });
     fastify.post("/", async function (request, res) {
-        const { name, price, description, address, rooms, area, type } = request.body;
+        const { name, price, description, address, rooms, area, type, amenities } = request.body;
         const data = {};
         if (rooms) {
             data.rooms = rooms;
@@ -32,6 +38,9 @@ const listing = async (fastify, opts) => {
         }
         if (address) {
             data.address = address;
+        }
+        if (amenities) {
+            data.amenities = amenities;
         }
         const listing = await fastify.prisma.listing.create({
             data: {
@@ -78,13 +87,12 @@ const listing = async (fastify, opts) => {
     });
     fastify.delete("/", async function (request, reply) {
         const { listingId } = request.body;
-        console.log('listingIdlistingId', listingId);
         await fastify.prisma.listing.delete({
             where: {
                 id: listingId,
             },
         });
-        return 'deleted successfully';
+        return "deleted successfully";
     });
 };
 exports.default = listing;

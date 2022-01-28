@@ -10,16 +10,23 @@ const listing: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
       return { allListing };
     }
     // By ID
-    const listing = await fastify.prisma.listing.findUnique({
+    let listing: any = await fastify.prisma.listing.findUnique({
       where: {
         id: listingId,
       },
     });
+
+    const amenities = await fastify.prisma.amenities.findMany({
+      where: {
+        id: { in: listing?.amenities },
+      },
+    });
+    listing.amenities = amenities;
     return { listing };
   });
 
   fastify.post("/", async function (request: any, res) {
-    const { name, price, description, address, rooms, area, type } =
+    const { name, price, description, address, rooms, area, type, amenities } =
       request.body;
 
     const data: any = {};
@@ -37,6 +44,9 @@ const listing: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     }
     if (address) {
       data.address = address;
+    }
+    if (amenities) {
+      data.amenities = amenities;
     }
     const listing = await fastify.prisma.listing.create({
       data: {
